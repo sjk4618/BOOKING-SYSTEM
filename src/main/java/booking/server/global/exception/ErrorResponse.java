@@ -1,7 +1,11 @@
 package booking.server.global.exception;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
 public record ErrorResponse(
+		@Schema(description = "서비스 에러 코드", example = "40901")
 		int code,
+		@Schema(description = "에러 메시지", example = "현재 예약 가능한 재고가 없습니다.")
 		String message
 ) {
 

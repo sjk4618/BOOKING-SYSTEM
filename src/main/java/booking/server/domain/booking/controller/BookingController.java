@@ -20,11 +20,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 @RequestMapping("/api/bookings")
-public class BookingController {
+public class BookingController implements BookingControllerDocs {
 
 	private final BookingFacade bookingFacade;
 
 	@PostMapping
+	@Override
 	public ResponseEntity<Object> createBooking(@Positive @RequestHeader(value = "userId", required = true) final long userId,
 												@NotBlank @RequestHeader(value = "Idempotency-Key", required = true) final String idempotencyKey,
 												@Valid @RequestBody final BookingCreateRequest request) {

@@ -14,11 +14,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 @RequestMapping("/api/checkout")
-public class CheckoutController {
+public class CheckoutController implements CheckoutControllerDocs {
 
 	private final CheckoutService checkoutService;
 
 	@GetMapping
+	@Override
 	public ResponseEntity<CheckoutResponse> getCheckout(@RequestHeader("userId") final long userId,
 														@RequestParam final long eventProductId) {
 		return ResponseEntity
