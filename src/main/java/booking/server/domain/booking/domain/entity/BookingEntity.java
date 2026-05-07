@@ -9,6 +9,7 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Index;
 import jakarta.persistence.Table;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -18,7 +19,13 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @Entity
-@Table(name = "bookings")
+@Table(
+		name = "bookings",
+		indexes = {
+				@Index(name = "idx_bookings_status_reserved_until", columnList = "status,reserved_until"),
+				@Index(name = "idx_bookings_status", columnList = "status")
+		}
+)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class BookingEntity extends BaseTimeEntity {
 

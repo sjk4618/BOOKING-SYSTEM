@@ -6,6 +6,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Index;
 import jakarta.persistence.Table;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -15,7 +16,12 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @Entity
-@Table(name = "event_products")
+@Table(
+        name = "event_products",
+        indexes = {
+                @Index(name = "idx_event_products_open_at", columnList = "open_at")
+        }
+)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class EventProductEntity extends BaseTimeEntity {
 
