@@ -22,5 +22,5 @@ Write focused Spring Boot test code after feature implementation.
 Use .ai/agents/test-writer.md to write focused tests for the implemented changes.
 Apply test-guide and any relevant Java, Spring Boot, or JPA skills.
 Create or update test files under src/test/java following the main package structure.
-Run the appropriate Gradle test command, generate/check JaCoCo coverage, and report remaining test gaps.
+Run the appropriate Gradle test command, generate/check JaCoCo coverage, always show the user the latest JaCoCo coverage numbers, and report remaining test gaps.
 ```

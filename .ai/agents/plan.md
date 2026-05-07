@@ -46,10 +46,19 @@ You are an expert planning specialist focused on creating comprehensive, actiona
 - Clearly separate responsibilities between Controller, Service, Component, Repository, entity, DTO, policy, strategy, and integration components
 - Prefer `Controller -> Service -> Component -> Repository` flow for domain architecture
 - Use domain components for focused operations such as retrievers, savers, removers, validators, calculators, and processors
+- Name retrieval components as `DomainRetriever`, for example `BookingRetriever` or `EventProductRetriever`; do not use `Reader` for this role
+- In retrievers, name the main DB-backed retrieval method `get(...)`; when retrieving from Redis cache, name the method `getFromRedis(...)`
+- Treat Controller, Service, DTO, and API-facing domain exceptions as the application/API side; treat Entity, Component, Repository, and core exceptions as the core side
+- Core components must not depend on `BusinessException`, `ErrorCode`, or API response policy; throw domain-local core exceptions instead
+- Service methods should catch core exceptions and translate them into API-facing exceptions such as `BusinessException` with the appropriate `ErrorCode`
+- Keep domain-specific API/business exceptions in each domain package's `exception` package, not in `global.exception`; keep only shared infrastructure exceptions and handlers in `global.exception`
+- Core exceptions that are only used as control signals may be empty `final` `RuntimeException` subclasses without custom messages or constructors
 - Design data models and core entity relationships
 - Define API contracts, request/response structures, and error response policies
 - Determine synchronous vs asynchronous processing strategies
 - Consider persistence strategy, indexing, caching, locking, and idempotency where relevant
+- When Redis is used in multiple components, prefer a small project-level Redis client/wrapper over direct `RedisTemplate` usage across domains
+- Keep Redis key names, TTLs, warm-up, lock behavior, and failure fallback explicit in the relevant cache/stock component and decision docs
 
 ### 4. Trade-Off Analysis
 Every meaningful architectural decision should document:
@@ -159,10 +168,14 @@ Create detailed steps with:
 - **Repository Pattern**: Keep persistence concerns out of business logic and domain components.
 - **Service Layer**: Keep use-case orchestration and transaction boundaries in services.
 - **Domain Component Layer**: Put reusable focused domain operations in components, for example `BookingRetriever`, `BookingSaver`, `BookingRemover`, `StockValidator`, or `PaymentProcessor`.
+- **Retriever Naming**: Use `DomainRetriever` as the class name, `get(...)` for DB-backed retrieval, and `getFromRedis(...)` for Redis cache reads.
+- **Exception Boundary**: Core components/repositories/entities throw domain-local core exceptions; services translate those into API-facing business exceptions; global handlers only convert final application exceptions into HTTP responses.
+- **Exception Packages**: Put domain-specific exceptions under `domain/{domain}/exception`; reserve `global.exception` for shared exception base types, error response types, and global handlers.
 - **Filter/Middleware Pattern**: Put cross-cutting concerns such as authentication, logging, tracing, and common exception handling in separate layers.
 - **Normalization**: Use normalized core domain data where integrity matters.
 - **Selective Denormalization**: Use only when read performance justifies synchronization cost.
 - **Caching Strategy**: Define cache keys, TTLs, and invalidation together.
+- **Redis Access**: Centralize low-level RedisTemplate operations behind a project Redis client/wrapper; domain components should use that abstraction.
 - **Eventual Consistency**: Clearly define consistency boundaries for asynchronous or distributed flows.
 
 ## When Planning Refactors

@@ -145,8 +145,10 @@ Use `./gradlew test` for normal verification, and always generate/check JaCoCo c
 ## Coverage Reporting
 
 - Always inspect JaCoCo after running tests.
+- Always show the user the latest JaCoCo coverage numbers after running tests.
 - Report the HTML and XML report paths when available.
 - Summarize the main coverage counters, especially line and branch coverage.
+- Include at least instruction, branch, line, method, and class coverage in the user-facing result.
 - If coverage is low, identify the untested behavior rather than chasing trivial getter or boilerplate coverage.
 - Default report paths:
   - HTML: `build/reports/jacoco/test/html/index.html`

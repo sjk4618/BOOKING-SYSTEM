@@ -65,6 +65,58 @@ public class MarketService {
 }
 ```
 
+## Domain Components
+
+- Keep use-case orchestration in services, and put focused domain operations behind components.
+- Name retrieval components as `DomainRetriever`, for example `MarketRetriever` or `BookingRetriever`.
+- Use `get(...)` as the main DB-backed retrieval method name inside retrievers.
+- Use `getFromRedis(...)` when a component reads from Redis cache.
+- Do not name retrieval components `Reader`.
+- Components, repositories, and entities are core-side code. They must not depend on API response concerns such as `BusinessException`, `ErrorCode`, or controller/global handler policy.
+- Core-side not-found or invalid-state exceptions should live in the owning domain's `exception` package.
+- If a core exception is only used as a control signal and the service maps it to an API exception, prefer an empty `final` `RuntimeException` subclass without a custom message.
+- Services are application-side code. Catch core exceptions in services and translate them to API-facing business exceptions with the right `ErrorCode`.
+
+```java
+@Component
+public class MarketRetriever {
+  private final MarketRepository marketRepository;
+  private final MarketCache marketCache;
+
+  public Market get(Long marketId) {
+    return marketCache.getFromRedis(marketId)
+        .orElseGet(() -> getFromDatabase(marketId));
+  }
+
+  private Market getFromDatabase(Long marketId) {
+    return marketRepository.findById(marketId)
+        .map(Market::from)
+        .orElseThrow(MarketNotFoundException::new);
+  }
+}
+```
+
+```java
+public final class MarketNotFoundException extends RuntimeException {
+}
+```
+
+```java
+@Service
+public class MarketService {
+  private final MarketRetriever marketRetriever;
+
+  public MarketResponse getMarket(Long marketId) {
+    try {
+      Market market = marketRetriever.get(marketId);
+      return MarketResponse.from(market);
+    } catch (MarketNotFoundException exception) {
+      throw new BusinessException(ErrorCode.MARKET_NOT_FOUND);
+    }
+  }
+}
+```
+
 ## DTOs and Validation
 
 ```java
@@ -111,6 +163,10 @@ class GlobalExceptionHandler {
 ## Caching
 
 Requires `@EnableCaching` on a configuration class.
+
+For direct Redis access, centralize `RedisTemplate` or `StringRedisTemplate` behind a small project-level Redis client/wrapper.
+Domain components should depend on that wrapper instead of calling `opsForValue()`, `opsForSet()`, or lock commands directly.
+Keep cache policy decisions such as miss fallback, TTL, lock keys, and failure behavior in domain cache components, not in controllers.
 
 ```java
 @Service

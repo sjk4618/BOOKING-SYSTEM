@@ -1,8 +1,14 @@
 package booking.server.global.exception;
 
-public class BadRequestException extends BusinessException {
+import lombok.Getter;
+
+@Getter
+public class BadRequestException extends RuntimeException {
+
+	private final ErrorCode errorCode;
 
 	public BadRequestException() {
-		super(ErrorCode.BAD_REQUEST);
+		super(ErrorCode.BAD_REQUEST.getMessage());
+		this.errorCode = ErrorCode.BAD_REQUEST;
 	}
 }

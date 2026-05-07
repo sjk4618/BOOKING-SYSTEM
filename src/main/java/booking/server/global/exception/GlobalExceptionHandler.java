@@ -2,6 +2,7 @@ package booking.server.global.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MissingRequestHeaderException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -19,12 +20,22 @@ public class GlobalExceptionHandler {
 				.body(ErrorResponse.from(errorCode));
 	}
 
+	@ExceptionHandler(BadRequestException.class)
+	public ResponseEntity<ErrorResponse> handleBadRequestException(final BadRequestException exception) {
+		ErrorCode errorCode = exception.getErrorCode();
+
+		return ResponseEntity
+				.status(errorCode.getStatus())
+				.body(ErrorResponse.from(errorCode));
+	}
+
 	@ExceptionHandler({
+			MissingRequestHeaderException.class,
 			MissingServletRequestParameterException.class,
 			MethodArgumentTypeMismatchException.class
 	})
-	public ResponseEntity<ErrorResponse> handleBadRequestException(final Exception exception) {
-		return handleBusinessException(new BadRequestException());
+	public ResponseEntity<ErrorResponse> handleRequestBindingException(final Exception exception) {
+		return handleBadRequestException(new BadRequestException());
 	}
 
 	@ExceptionHandler(Exception.class)

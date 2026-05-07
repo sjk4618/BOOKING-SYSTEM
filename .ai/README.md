@@ -69,8 +69,31 @@ booking/payment/stock 흐름을 확장 가능하게 설계해줘.
 1. `/plan`으로 기능 구현 또는 구조 변경 계획 수립
 2. 계획에 따라 기능 구현 또는 구조 변경
 3. `/write-tests`로 변경된 동작에 대한 테스트 코드 작성
-4. `./gradlew test jacocoTestReport` 실행 후 JaCoCo 커버리지 확인
+4. `./gradlew test jacocoTestReport` 실행 후 JaCoCo 커버리지 확인 및 사용자에게 수치 공유
 5. `/code-review`로 최신 diff 리뷰
 6. 필요한 수정 후 다시 테스트 실행
 
-테스트는 구현 이후에 작성해도 되지만, 동작이 바뀐 코드는 리뷰 또는 병합 전에 의미 있는 자동화 테스트와 JaCoCo 커버리지 확인이 있어야 합니다.
+테스트는 구현 이후에 작성해도 되지만, 동작이 바뀐 코드는 리뷰 또는 병합 전에 의미 있는 자동화 테스트와 JaCoCo 커버리지 확인이 있어야 합니다. 테스트를 실행한 경우 사용자에게 최신 JaCoCo 수치를 항상 공유합니다.
+
+## 프로젝트 네이밍 규칙
+
+- 조회 전용 도메인 컴포넌트 클래스명은 `DomainRetriever` 형식을 사용합니다. 예: `BookingRetriever`, `EventProductRetriever`
+- DB 기반 조회 메서드는 `get(...)`으로 작성합니다.
+- Redis 캐시 조회 메서드는 `getFromRedis(...)`로 작성합니다.
+- 조회 컴포넌트에 `Reader` 네이밍을 사용하지 않습니다.
+
+## 계층 및 예외 규칙
+
+- application/API 쪽은 `controller`, `service`, `dto`, API-facing exception을 포함합니다.
+- core 쪽은 `entity`, `component`, `repository`, core exception을 포함합니다.
+- core 코드는 `BusinessException`, `ErrorCode`, HTTP 응답 정책에 의존하지 않습니다.
+- core 컴포넌트는 각 도메인 `exception` 패키지의 core 예외를 던지고, service가 이를 잡아 API-facing exception으로 변환합니다.
+- domain-specific exception은 `domain/{domain}/exception`에 둡니다.
+- `global.exception`에는 공통 base exception, error response, global exception handler처럼 전역 응답 처리에 필요한 것만 둡니다.
+- service에서 API 예외로 변환될 core 예외는 메시지/생성자 없이 빈 `final RuntimeException` 클래스로 작성해도 됩니다.
+
+## Redis 사용 규칙
+
+- 여러 컴포넌트에서 Redis를 사용할 때는 `RedisTemplate` 또는 `StringRedisTemplate`을 직접 흩뿌리지 않고 프로젝트 공통 Redis client/wrapper를 둡니다.
+- 도메인 컴포넌트는 공통 Redis client/wrapper를 통해 value, set, lock 같은 저수준 Redis 동작을 사용합니다.
+- Redis key, TTL, warm-up, lock, 장애 fallback 정책은 관련 cache/stock 컴포넌트와 결정 문서에 명시합니다.
