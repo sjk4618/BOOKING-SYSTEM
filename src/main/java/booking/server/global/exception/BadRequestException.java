@@ -7,8 +7,8 @@ public class BadRequestException extends RuntimeException {
 
 	private final ErrorCode errorCode;
 
-	public BadRequestException() {
-		super(ErrorCode.BAD_REQUEST.getMessage());
-		this.errorCode = ErrorCode.BAD_REQUEST;
+	public BadRequestException(final ErrorCode errorCode) {
+		super(errorCode.getMessage());
+		this.errorCode = errorCode;
 	}
 }

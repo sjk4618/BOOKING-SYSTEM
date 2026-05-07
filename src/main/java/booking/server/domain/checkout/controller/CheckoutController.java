@@ -21,6 +21,8 @@ public class CheckoutController {
 	@GetMapping
 	public ResponseEntity<CheckoutResponse> getCheckout(@RequestHeader("userId") final long userId,
 														@RequestParam final long eventProductId) {
-		return ResponseEntity.ok(checkoutService.getCheckout(eventProductId, userId));
+		return ResponseEntity
+				.ok()
+				.body(checkoutService.getCheckout(eventProductId, userId));
 	}
 }

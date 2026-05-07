@@ -59,4 +59,16 @@ public class PaymentEntity extends BaseTimeEntity {
                                        final String requestKey) {
         return new PaymentEntity(bookingId, paymentMethod, amount, PaymentStatus.PENDING, requestKey);
     }
+
+    public void complete() {
+        this.status = PaymentStatus.COMPLETED;
+    }
+
+    public void fail() {
+        this.status = PaymentStatus.FAILED;
+    }
+
+    public void cancel() {
+        this.status = PaymentStatus.CANCELLED;
+    }
 }

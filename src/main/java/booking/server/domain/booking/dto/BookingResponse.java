@@ -1,30 +1,33 @@
-package booking.server.domain.booking.domain;
+package booking.server.domain.booking.dto;
 
 import booking.server.domain.booking.domain.entity.BookingEntity;
 import booking.server.domain.booking.domain.entity.BookingStatus;
-import booking.server.domain.stock.domain.entity.StockReservationMethod;
+import booking.server.domain.payment.domain.entity.PaymentEntity;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
-public record Booking(
+public record BookingResponse(
 		long bookingId,
 		long eventProductId,
-		Long userId,
+		long userId,
 		BookingStatus status,
 		BigDecimal totalAmount,
 		LocalDateTime reservedUntil,
-		StockReservationMethod stockReservationMethod
+		List<BookingPaymentResponse> payments
 ) {
 
-	public static Booking fromEntity(final BookingEntity booking) {
-		return new Booking(
+	public static BookingResponse from(final BookingEntity booking, final List<PaymentEntity> payments) {
+		return new BookingResponse(
 				booking.getId(),
 				booking.getEventProductEntityId(),
 				booking.getUserId(),
 				booking.getStatus(),
 				booking.getTotalAmount(),
 				booking.getReservedUntil(),
-				booking.getStockReservationMethod()
+				payments.stream()
+						.map(BookingPaymentResponse::from)
+						.toList()
 		);
 	}
 }
