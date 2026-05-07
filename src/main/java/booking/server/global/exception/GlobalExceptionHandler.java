@@ -19,11 +19,19 @@ public class GlobalExceptionHandler {
 				.body(ErrorResponse.from(errorCode));
 	}
 
+	@ExceptionHandler({
+			MissingServletRequestParameterException.class,
+			MethodArgumentTypeMismatchException.class
+	})
+	public ResponseEntity<ErrorResponse> handleBadRequestException(final Exception exception) {
+		return handleBusinessException(new BadRequestException());
+	}
+
 	@ExceptionHandler(Exception.class)
 	public ResponseEntity<ErrorResponse> handleException(final Exception exception) {
 
 		return ResponseEntity
 				.status(HttpStatus.INTERNAL_SERVER_ERROR)
-				.body(ErrorResponse.from(ErrorCode.INTERNAL_SERVER_ERROR, exception.getMessage()));
+				.body(ErrorResponse.from(ErrorCode.INTERNAL_SERVER_ERROR));
 	}
 }
