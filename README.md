@@ -1,8 +1,8 @@
-# Booking Server
+# 예약 서버
 
-00:00에 오픈되는 한정 수량 숙박 상품을 대상으로 checkout 조회와 booking 결제/예약 완료를 처리하는 Spring Boot 서버입니다.
+00:00에 오픈되는 한정 수량 숙박 상품을 대상으로 주문서 조회와 예약 결제를 처리하는 Spring Boot 서버입니다.
 
-## 1. System Architecture
+## 1. 시스템 구조
 
 ```text
 Client
@@ -14,111 +14,110 @@ Client
   -> MySQL / Redis / External Payment Adapter
 ```
 
-주요 책임:
+각 계층의 역할은 다음과 같습니다.
 
 ```text
 Controller
-- Header, request body validation
-- HTTP request/response 처리
+- HTTP 요청과 응답을 처리합니다.
+- 헤더와 요청 본문 검증을 수행합니다.
 
 Facade
-- Booking use case 순서 제어
-- Redis 재고 선점, DB transaction, 외부 결제, 보상 흐름 조합
-- 외부로 노출할 예외 변환
+- 예약 생성 use case의 전체 순서를 제어합니다.
+- Redis 재고 선점, DB transaction, 외부 결제, 보상 흐름을 조합합니다.
+- 외부로 노출할 예외 응답을 변환합니다.
 
 Transactional Service
-- 짧은 DB transaction 단위 제공
-- booking, payment, point, stock history, idempotency 상태 변경
+- 짧은 DB transaction 단위를 제공합니다.
+- booking, payment, point, stock history, idempotency 상태를 변경합니다.
 
 Component
-- 도메인별 조회, 저장, 검증, Redis 연산, 결제 전략 실행
+- 도메인별 조회, 저장, 검증, Redis 연산, 결제 전략 실행을 담당합니다.
 
 Repository
-- JPA 기반 persistence 접근
-- 조건부 update와 조회 query 제공
+- JPA 기반 persistence 접근을 담당합니다.
+- 조건부 update와 조회 query를 제공합니다.
 ```
 
-핵심 설계:
+핵심 설계는 다음과 같습니다.
 
 - `GET /api/checkout`은 상태를 변경하지 않는 조회 API입니다.
 - `POST /api/bookings`만 재고, 결제, 포인트, 예약 상태를 변경합니다.
-- Redis Set과 Lua script로 재고 선점을 원자 처리합니다.
+- Redis Set과 Lua script로 재고 선점을 원자적으로 처리합니다.
 - Redis 장애 시 MySQL 조건부 update로 제한된 DB fallback을 수행합니다.
 - 동일 사용자는 같은 상품을 1개만 예약할 수 있습니다.
-- 멱등키는 DB table에 저장하며, 완료/실패 응답을 재사용합니다.
+- 멱등키는 DB table에 저장하며 완료/실패 응답을 재사용합니다.
 - 결제 수단은 `PaymentProcessor` 전략 구현체로 확장합니다.
+- 외부 승인/취소 연결점은 `PaymentGateway`로 분리합니다.
 
-## 2. Project Structure
+## 2. 프로젝트 구조
 
 ```text
 src/main/java/booking/server
   global
-    config          - Clock, fallback executor 설정
-    exception       - 공통 예외 응답
-    redis           - RedisTemplate wrapper
+    config          - Clock, fallback executor, OpenAPI, local seed 설정입니다.
+    exception       - 공통 예외 응답입니다.
+    redis           - RedisTemplate wrapper입니다.
   domain
-    checkout        - 주문서 진입 조회 API
-    booking         - 예약 생성 orchestration, entity, dto
-    payment         - 결제 검증, 결제 수단별 processor
-    stock           - Redis 재고 선점, DB fallback, stock history
-    idempotency     - 멱등키 저장과 응답 재생
-    eventproduct    - 상품 조회/cache/재고 조건부 update
-    user            - 사용자 포인트 조회/차감/복구
-    recovery        - pending 예약, payment unknown, Redis rebuild 보정
-docs                - 요구사항, 상세 flow, 테스트 정리 문서
+    checkout        - 주문서 진입 조회 API입니다.
+    booking         - 예약 생성 orchestration, entity, dto입니다.
+    payment         - 결제 검증, 결제 수단별 processor/gateway입니다.
+    stock           - Redis 재고 선점, DB fallback, stock history입니다.
+    idempotency     - 멱등키 저장과 응답 재생입니다.
+    eventproduct    - 상품 조회, cache, 재고 조건부 update입니다.
+    user            - 사용자 포인트 조회, 차감, 복구입니다.
+    recovery        - pending 예약, payment unknown, Redis rebuild 보정입니다.
+docs                - 요구사항, 상세 flow, 테스트 정리 문서입니다.
 ```
 
-## 3. Run
+## 3. 채점자 실행 방법
 
-### Requirements
+필요한 환경은 다음과 같습니다.
 
-- Java 17
-- Docker
-- Redis and MySQL are provided by `docker-compose.yml`
+- Java 17입니다.
+- Docker가 필요합니다.
+- MySQL과 Redis는 `docker-compose.yml`로 제공합니다.
 
-### Evaluator Quick Start
-
-Run MySQL and Redis:
+MySQL과 Redis를 실행합니다.
 
 ```bash
 docker compose up -d
 ```
 
-Run the Spring Boot application with the `local` profile:
+`local` 프로필로 Spring Boot 애플리케이션을 실행합니다.
 
 ```bash
 SPRING_PROFILES_ACTIVE=local ./gradlew bootRun
 ```
 
-On startup, Hibernate creates the MySQL schema because `spring.jpa.hibernate.ddl-auto` is set to `create`. After the schema is created, the `local` profile seeder inserts demo MySQL rows and Redis keys automatically. No manual SQL or Redis command is required.
+애플리케이션 시작 시 `spring.jpa.hibernate.ddl-auto=create` 설정에 따라 MySQL schema가 생성됩니다. Schema 생성 이후 `local` 프로필 seeder가 demo MySQL row와 Redis key를 자동으로 삽입합니다. 채점자가 SQL이나 Redis 명령을 직접 실행할 필요는 없습니다.
 
-`bootRun` keeps running because it is the web server process. It is ready when the log contains:
+`bootRun`은 웹 서버 프로세스이기 때문에 종료되지 않고 계속 실행되는 것이 정상입니다. 아래 로그가 보이면 준비가 완료된 상태입니다.
 
 ```text
 Tomcat started on port 8080
 Started ServerApplication
 ```
 
-Open Swagger UI:
+Swagger UI는 다음 주소에서 확인할 수 있습니다.
 
 ```text
 http://localhost:8080/swagger-ui.html
 ```
 
-Use these default values in Swagger:
+Swagger 테스트에 사용할 기본 값은 다음과 같습니다.
 
 ```text
 userId: 1
 eventProductId: 1
 price: 50000
-Idempotency-Key: any unique string, for example swagger-001
+Idempotency-Key: swagger-001 같은 고유 문자열입니다.
 ```
 
-Recommended Swagger test order:
+Swagger 테스트 순서는 다음과 같습니다.
 
-1. `GET /api/checkout` with header `userId=1` and query `eventProductId=1`.
-2. `POST /api/bookings` with headers `userId=1`, `Idempotency-Key=swagger-001`.
-3. Use this request body:
+1. `GET /api/checkout`을 실행합니다. 헤더는 `userId=1`, 쿼리 파라미터는 `eventProductId=1`입니다.
+2. `POST /api/bookings`를 실행합니다. 헤더는 `userId=1`, `Idempotency-Key=swagger-001`입니다.
+3. 요청 본문은 다음과 같습니다.
 
 ```json
 {
@@ -132,15 +131,11 @@ Recommended Swagger test order:
 }
 ```
 
-If you repeat `POST /api/bookings`, change `Idempotency-Key` to a new value such as `swagger-002`. The same key intentionally replays the saved idempotent response.
+`POST /api/bookings`를 반복 테스트할 때는 `Idempotency-Key`를 `swagger-002`, `swagger-003`처럼 새 값으로 바꾸는 것이 좋습니다. 같은 key를 다시 보내면 멱등성 정책에 따라 저장된 응답이 재사용됩니다.
 
-### Start Infrastructure
+## 4. 로컬 인프라 정보
 
-```bash
-docker compose up -d
-```
-
-Default infrastructure:
+Docker Compose로 실행되는 기본 접속 정보는 다음과 같습니다.
 
 ```text
 MySQL host: localhost
@@ -153,54 +148,29 @@ Redis host: localhost
 Redis port: 16379
 ```
 
-### Run Application
-
-```bash
-SPRING_PROFILES_ACTIVE=local ./gradlew bootRun
-```
-
-The default datasource and Redis connection are defined in `src/main/resources/application.yaml`.
-The app currently uses `spring.jpa.hibernate.ddl-auto=create`, so the schema is recreated when the application starts. With the `local` profile, demo MySQL rows and Redis keys are seeded automatically after the schema is ready.
-
-### Demo Data for Swagger or Postman
-
-The application automatically prepares this local demo data:
-
-```text
-userId: 1
-eventProductId: 1
-price: 50000
-```
-
-If you want to reset the demo data while the app is already running, run:
+실행 중인 demo data를 다시 초기화하려면 다음 명령을 사용합니다.
 
 ```bash
 bash scripts/seed-local.sh
 ```
 
-Swagger UI:
-
-```text
-http://localhost:8080/swagger-ui.html
-```
-
-OpenAPI JSON:
+OpenAPI JSON 문서는 다음 주소에서 확인할 수 있습니다.
 
 ```text
 http://localhost:8080/v3/api-docs
 ```
 
-Equivalent Postman request:
+Postman으로 동일하게 테스트하려면 다음 요청을 사용합니다.
 
 ```text
 GET http://localhost:8080/api/checkout?eventProductId=1
-Header:
+헤더:
   userId: 1
 ```
 
 ```text
 POST http://localhost:8080/api/bookings
-Header:
+헤더:
   Content-Type: application/json
   userId: 1
   Idempotency-Key: postman-001
@@ -218,65 +188,65 @@ Header:
 }
 ```
 
-### Run Tests
+## 5. 테스트 실행
+
+테스트는 H2 인메모리 DB를 사용합니다. 따라서 단위 테스트 실행에는 MySQL과 Redis가 필요하지 않습니다.
 
 ```bash
 ./gradlew test
 ./gradlew jacocoTestCoverageVerification
 ```
 
-Tests use H2, so MySQL and Redis are not required for unit tests.
-
-### Stop Infrastructure
+인프라를 중지하려면 다음 명령을 사용합니다.
 
 ```bash
 docker compose down
 ```
 
-Remove volumes only when local data can be deleted:
+로컬 데이터까지 삭제해도 되는 경우에만 volume을 함께 제거합니다.
 
 ```bash
 docker compose down -v
 ```
 
-## 4. API List
+## 6. API 목록
 
-### GET Checkout
+### Checkout 조회 API
 
 ```text
 GET /api/checkout?eventProductId={eventProductId}
-Header:
+헤더:
   userId: Long
 ```
 
-Response example:
+응답 예시는 다음과 같습니다.
 
 ```json
 {
   "eventProductId": 1,
-  "name": "Hotel Package A",
-  "price": 100000,
+  "name": "Postman Hotel Package",
+  "price": 50000,
   "checkInAt": "2026-06-01T15:00:00",
   "checkOutAt": "2026-06-02T11:00:00",
   "openAt": "2026-05-10T00:00:00",
   "user": {
-    "userId": 10,
-    "name": "user",
-    "availablePoint": 30000
+    "userId": 1,
+    "name": "Postman User",
+    "availablePoint": 100000
   }
 }
 ```
 
-### POST Booking
+### Booking 생성 API
 
 ```text
 POST /api/bookings
-Header:
+헤더:
   userId: Long
   Idempotency-Key: String
 ```
 
-Request example:
+요청 예시는 다음과 같습니다.
 
 ```json
 {
@@ -284,57 +254,47 @@ Request example:
   "payments": [
     {
       "paymentMethod": "CREDIT_CARD",
-      "amount": 90000
-    },
-    {
-      "paymentMethod": "Y_POINT",
-      "amount": 10000
+      "amount": 50000
     }
   ]
 }
 ```
 
-Response example:
+응답 예시는 다음과 같습니다.
 
 ```json
 {
-  "bookingId": 100,
+  "bookingId": 1,
   "eventProductId": 1,
-  "userId": 10,
+  "userId": 1,
   "status": "CONFIRMED",
-  "totalAmount": 100000,
+  "totalAmount": 50000,
   "reservedUntil": "2026-05-10T00:03:00",
   "payments": [
     {
       "paymentId": 1,
       "paymentMethod": "CREDIT_CARD",
-      "amount": 90000,
-      "status": "COMPLETED"
-    },
-    {
-      "paymentId": 2,
-      "paymentMethod": "Y_POINT",
-      "amount": 10000,
+      "amount": 50000,
       "status": "COMPLETED"
     }
   ]
 }
 ```
 
-Validation:
+요청 검증 규칙은 다음과 같습니다.
 
-- `userId` header is required and positive.
-- `Idempotency-Key` header is required and not blank.
-- `eventProductId` is required.
-- `payments` is required and not empty.
-- `paymentMethod` is required.
-- `amount` is required and positive.
-- `CREDIT_CARD + Y_PAY` is rejected.
-- `CREDIT_CARD + Y_POINT` is allowed.
-- `Y_PAY + Y_POINT` is allowed.
-- Total payment amount must equal product price.
+- `userId` header는 필수이며 양수여야 합니다.
+- `Idempotency-Key` header는 필수이며 공백일 수 없습니다.
+- `eventProductId`는 필수입니다.
+- `payments`는 필수이며 비어 있을 수 없습니다.
+- `paymentMethod`는 필수입니다.
+- `amount`는 필수이며 양수여야 합니다.
+- `CREDIT_CARD + Y_PAY` 조합은 허용하지 않습니다.
+- `CREDIT_CARD + Y_POINT` 조합은 허용합니다.
+- `Y_PAY + Y_POINT` 조합은 허용합니다.
+- 결제 금액 합계는 상품 가격과 같아야 합니다.
 
-## 5. Booking Flow
+## 7. 예약 생성 흐름
 
 ```mermaid
 sequenceDiagram
@@ -345,6 +305,7 @@ sequenceDiagram
     participant R as Redis Lua
     participant DB as MySQL
     participant P as PaymentProcessor
+    participant G as PaymentGateway
 
     C->>API: POST /api/bookings
     API->>F: createBooking(userId, idempotencyKey, request)
@@ -360,12 +321,14 @@ sequenceDiagram
         end
         F->>DB: insert stock history and PENDING payments
         F->>P: approve external payments
+        P->>G: approve PG payments
         alt payment success
             F->>DB: complete payments and confirm booking
             F->>I: store success response
             F-->>API: 201 response
         else payment failure
             F->>P: compensate approved payments
+            P->>G: compensate PG payments
             F->>DB: restore point, release stock, fail booking
             F->>I: store failure response
             F-->>API: error response
@@ -373,7 +336,9 @@ sequenceDiagram
     end
 ```
 
-## 6. DDL
+## 8. DDL
+
+현재 애플리케이션은 `ddl-auto=create`로 schema를 생성합니다. 참고용 DDL은 다음과 같습니다.
 
 ```sql
 CREATE TABLE event_products (
@@ -465,7 +430,7 @@ CREATE TABLE idempotency_keys (
 );
 ```
 
-## 7. ERD
+## 9. ERD
 
 ```mermaid
 erDiagram
@@ -546,25 +511,25 @@ erDiagram
     }
 ```
 
-## 8. Redis Keys
+## 10. Redis Key
 
 ```text
 checkout:event-product:{eventProductId}
-- Type: String
-- Value: EventProduct JSON
-- Purpose: checkout product cache
+- 타입: String입니다.
+- 값: EventProduct JSON입니다.
+- 목적: checkout 상품 cache입니다.
 
 event-product:{eventProductId}:stock:used
-- Type: Set
-- Member: bookingId
-- Purpose: active Redis stock reservation count
+- 타입: Set입니다.
+- 멤버: bookingId입니다.
+- 목적: Redis 기준 활성 재고 선점 수를 계산하기 위한 key입니다.
 
 event-product:{eventProductId}:stock:users
-- Type: Set
-- Member: userId
-- Purpose: one reservation per user for the same product
+- 타입: Set입니다.
+- 멤버: userId입니다.
+- 목적: 같은 사용자가 같은 상품을 1개만 예약하도록 제한하기 위한 key입니다.
 
 event-product:{eventProductId}:stock:sold-out
-- Type: String
-- Purpose: short TTL sold-out marker
+- 타입: String입니다.
+- 목적: 짧은 TTL을 가진 sold-out marker입니다.
 ```

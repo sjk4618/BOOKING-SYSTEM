@@ -72,3 +72,21 @@
 - 포인트 금액이 정수로 변환될 수 없으면 `InvalidPaymentAmountException`으로 실패한다.
 
 이 클래스는 request body 검증 이후에도 내부 호출에서 결제 정책을 방어할 수 있도록 core payment rule을 검증한다.
+
+### `CreditCardPaymentProcessorTests`
+
+방식: Mockito 기반 단위 테스트. `CreditCardPaymentGateway`를 mock 처리하고 `CreditCardPaymentProcessor`가 외부 결제 adapter에 위임하는지만 검증한다.
+
+검증 대상:
+
+- 신용카드 승인 요청은 `CreditCardPaymentGateway.approve`로 전달된다.
+- 신용카드 보상 요청은 `CreditCardPaymentGateway.compensate`로 전달된다.
+
+### `YPayPaymentProcessorTests`
+
+방식: Mockito 기반 단위 테스트. `YPayPaymentGateway`를 mock 처리하고 `YPayPaymentProcessor`가 외부 결제 adapter에 위임하는지만 검증한다.
+
+검증 대상:
+
+- Y페이 승인 요청은 `YPayPaymentGateway.approve`로 전달된다.
+- Y페이 보상 요청은 `YPayPaymentGateway.compensate`로 전달된다.

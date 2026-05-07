@@ -718,6 +718,12 @@ PaymentProcessor
 - complete(...)
 - compensate(...)
 
+PaymentGateway
+- supports(paymentMethod)
+- approve(...)
+- compensate(...)
+- 실제 PG 연동을 담당하는 adapter interface
+
 PaymentProcessorComposite
 - request의 paymentMethod별 processor 선택
 - 외부 결제는 approve 호출
@@ -729,8 +735,9 @@ PaymentProcessorComposite
 ```text
 1. PaymentMethod enum 추가
 2. PaymentProcessor 구현체 추가
-3. PaymentPolicy에 조합 허용 여부 추가
-4. 테스트 케이스 추가
+3. 외부 승인이 필요한 수단이면 PaymentGateway 구현체 추가
+4. PaymentPolicy에 조합 허용 여부 추가
+5. 테스트 케이스 추가
 ```
 
 Booking Facade는 `PaymentProcessorComposite`만 호출하므로 새 결제 수단이 생겨도 flow 변경을 최소화한다.

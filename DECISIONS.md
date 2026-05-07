@@ -142,7 +142,7 @@ EXPIRED    - 오래된 처리 상태 정리
 
 - BookingFacade에서 payment method별 `if` 분기를 직접 처리합니다.
 - 결제 수단별 service를 만들고 BookingFacade가 모두 의존합니다.
-- `PaymentProcessor` interface와 composite routing을 사용합니다.
+- `PaymentProcessor` interface와 composite routing을 사용하고, 외부 PG 연결은 `PaymentGateway`로 분리합니다.
 
 ### Decision Rationale
 
@@ -151,13 +151,16 @@ EXPIRED    - 오래된 처리 상태 정리
 각 결제 수단은 `PaymentProcessor` 구현체로 분리합니다.
 `PaymentProcessorComposite`는 `PaymentMethod`에 맞는 processor를 찾아 `approve`와 `compensate`를 호출합니다.
 BookingFacade는 composite만 의존하므로 결제 수단별 상세 구현을 알지 않습니다.
+신용카드와 Y페이처럼 외부 승인이 필요한 수단은 processor가 `PaymentGateway`에 승인/취소를 위임합니다.
+현재 gateway 구현체는 실제 PG 연동을 생략한 local mock adapter이며, 실제 연동 시에는 gateway 내부 호출만 교체하면 됩니다.
 
 새 결제 수단을 추가할 때의 변경 범위는 다음으로 제한됩니다.
 
 ```text
 1. PaymentMethod enum 추가
 2. PaymentProcessor 구현체 추가
-3. 결제 조합/금액 정책 검증 추가
+3. 외부 승인이 필요하면 PaymentGateway 구현체 추가
+4. 결제 조합/금액 정책 검증 추가
 ```
 
 `CREDIT_CARD + Y_PAY` 혼용 금지는 request body validation에서 1차 차단하고, `PaymentValidator`에서도 방어합니다.

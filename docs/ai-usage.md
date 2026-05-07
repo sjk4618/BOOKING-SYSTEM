@@ -168,6 +168,12 @@ src/test/java/booking/server/domain/payment/component/PaymentValidatorTests.java
 - 신용카드와 포인트, Y페이와 포인트 조합 허용을 확인했습니다.
 - 결제 금액 합계 불일치와 소수점 포인트 금액 예외를 확인했습니다.
 
+src/test/java/booking/server/domain/payment/component/CreditCardPaymentProcessorTests.java
+- 신용카드 결제 승인과 보상이 PG gateway로 위임되는지 확인했습니다.
+
+src/test/java/booking/server/domain/payment/component/YPayPaymentProcessorTests.java
+- Y페이 결제 승인과 보상이 PG gateway로 위임되는지 확인했습니다.
+
 src/test/java/booking/server/domain/stock/component/StockReservationComponentTests.java
 - Redis 선점 성공 시 Redis 예약 결과를 확인했습니다.
 - Redis 선점 실패 시 전용 executor를 통한 DB fallback 예약을 확인했습니다.

@@ -7,6 +7,12 @@ import org.springframework.stereotype.Component;
 @Component
 public class YPayPaymentProcessor implements PaymentProcessor {
 
+	private final YPayPaymentGateway paymentGateway;
+
+	public YPayPaymentProcessor(final YPayPaymentGateway paymentGateway) {
+		this.paymentGateway = paymentGateway;
+	}
+
 	@Override
 	public PaymentMethod paymentMethod() {
 		return PaymentMethod.Y_PAY;
@@ -14,5 +20,11 @@ public class YPayPaymentProcessor implements PaymentProcessor {
 
 	@Override
 	public void approve(final String requestKey, final BigDecimal amount) {
+		paymentGateway.approve(requestKey, amount);
+	}
+
+	@Override
+	public void compensate(final String requestKey, final BigDecimal amount) {
+		paymentGateway.compensate(requestKey, amount);
 	}
 }

@@ -5,13 +5,7 @@ import java.math.BigDecimal;
 import org.springframework.stereotype.Component;
 
 @Component
-public class CreditCardPaymentProcessor implements PaymentProcessor {
-
-	private final CreditCardPaymentGateway paymentGateway;
-
-	public CreditCardPaymentProcessor(final CreditCardPaymentGateway paymentGateway) {
-		this.paymentGateway = paymentGateway;
-	}
+public class CreditCardPaymentGateway implements PaymentGateway {
 
 	@Override
 	public PaymentMethod paymentMethod() {
@@ -20,11 +14,11 @@ public class CreditCardPaymentProcessor implements PaymentProcessor {
 
 	@Override
 	public void approve(final String requestKey, final BigDecimal amount) {
-		paymentGateway.approve(requestKey, amount);
+		// 실제 PG 승인 API를 호출하는 지점입니다. 현재는 local mock adapter로 성공 처리합니다.
 	}
 
 	@Override
 	public void compensate(final String requestKey, final BigDecimal amount) {
-		paymentGateway.compensate(requestKey, amount);
+		// 실제 PG 취소 API를 호출하는 지점입니다. 현재는 local mock adapter로 성공 처리합니다.
 	}
 }

@@ -408,7 +408,8 @@ COMMIT
 ```text
 1. CREDIT_CARD 또는 YPAY processor 호출
 2. request_key를 PG 요청 추적 키로 전달
-3. timeout을 짧게 설정
+3. PaymentProcessor가 결제수단별 PaymentGateway에 승인 요청 위임
+4. timeout을 짧게 설정
 ```
 
 YPOINT는 내부 포인트 차감으로 처리한다.
