@@ -11,10 +11,10 @@ Review the latest code changes for quality, security, maintainability, test cove
 - Run `git diff` first.
 - Focus on modified files.
 - Load related skills based on changed files:
-  - `.ai/skills/java-standard.md`
-  - `.ai/skills/springboot-standard.md`
-  - `.ai/skills/jpa-standard.md`
-  - `.ai/skills/test-guide.md`
+  - `.ai/skills/java-standard/SKILL.MD`
+  - `.ai/skills/springboot-standard/SKILL.MD`
+  - `.ai/skills/jpa-standard/SKILL.MD`
+  - `.ai/skills/test-guide/SKILL.MD`
 
 ## Command Prompt
 

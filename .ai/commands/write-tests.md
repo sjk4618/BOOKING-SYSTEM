@@ -11,10 +11,10 @@ Write focused Spring Boot test code after feature implementation.
 - Inspect changed files and implemented behavior.
 - Identify core business rules, edge cases, failure paths, and persistence behavior.
 - Load related skills:
-  - `.ai/skills/test-guide.md`
-  - `.ai/skills/java-standard.md`
-  - `.ai/skills/springboot-standard.md`
-  - `.ai/skills/jpa-standard.md`
+  - `.ai/skills/test-guide/SKILL.MD`
+  - `.ai/skills/java-standard/SKILL.MD`
+  - `.ai/skills/springboot-standard/SKILL.MD`
+  - `.ai/skills/jpa-standard/SKILL.MD`
 
 ## Command Prompt
 

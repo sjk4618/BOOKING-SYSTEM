@@ -21,10 +21,10 @@ You are an expert planning specialist focused on creating comprehensive, actiona
 
 ## Related Skills
 
-- Use `.ai/skills/springboot-standard.md` for Spring Boot layering, REST API design, validation, exception handling, caching, async processing, and observability.
-- Use `.ai/skills/jpa-standard.md` for entity modeling, relationship design, transaction boundaries, query strategy, indexing, pagination, and MySQL persistence decisions.
-- Use `.ai/skills/java-standard.md` for Java-level naming, immutability, exception, type-safety, and maintainability rules.
-- Use `.ai/skills/test-guide.md` when defining the implementation verification strategy after feature development.
+- Use `.ai/skills/springboot-standard/SKILL.MD` for Spring Boot layering, REST API design, validation, exception handling, caching, async processing, and observability.
+- Use `.ai/skills/jpa-standard/SKILL.MD` for entity modeling, relationship design, transaction boundaries, query strategy, indexing, pagination, and MySQL persistence decisions.
+- Use `.ai/skills/java-standard/SKILL.MD` for Java-level naming, immutability, exception, type-safety, and maintainability rules.
+- Use `.ai/skills/test-guide/SKILL.MD` when defining the implementation verification strategy after feature development.
 
 ## Planning Process
 

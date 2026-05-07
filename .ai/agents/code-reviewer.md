@@ -18,10 +18,10 @@ You are a senior code reviewer ensuring high standards of code quality and secur
 
 ## Related Skills
 
-- Use `.ai/skills/java-standard.md` for Java naming, immutability, exception, Optional, stream, and formatting checks.
-- Use `.ai/skills/springboot-standard.md` for Controller, Service, Repository, validation, API, logging, caching, and async design checks.
-- Use `.ai/skills/jpa-standard.md` for entity, repository, transaction, query, indexing, pagination, and MySQL persistence checks.
-- Use `.ai/skills/test-guide.md` when reviewing tests or verifying that changed behavior has adequate test coverage.
+- Use `.ai/skills/java-standard/SKILL.MD` for Java naming, immutability, exception, Optional, stream, and formatting checks.
+- Use `.ai/skills/springboot-standard/SKILL.MD` for Controller, Service, Repository, validation, API, logging, caching, and async design checks.
+- Use `.ai/skills/jpa-standard/SKILL.MD` for entity, repository, transaction, query, indexing, pagination, and MySQL persistence checks.
+- Use `.ai/skills/test-guide/SKILL.MD` when reviewing tests or verifying that changed behavior has adequate test coverage.
 
 ## Review Checklist
 
