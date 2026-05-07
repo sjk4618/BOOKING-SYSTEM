@@ -4,19 +4,16 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.Duration;
 import java.util.Optional;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
 
 @Component
+@RequiredArgsConstructor
 public class RedisClient {
 
 	private final StringRedisTemplate redisTemplate;
 	private final ObjectMapper objectMapper;
-
-	public RedisClient(final StringRedisTemplate redisTemplate, final ObjectMapper objectMapper) {
-		this.redisTemplate = redisTemplate;
-		this.objectMapper = objectMapper;
-	}
 
 	public <T> Optional<T> getJson(final String key, final Class<T> type) {
 		try {

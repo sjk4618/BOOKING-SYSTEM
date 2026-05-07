@@ -5,9 +5,11 @@ import booking.server.global.redis.RedisClient;
 import java.time.Duration;
 import java.util.Optional;
 import java.util.concurrent.ThreadLocalRandom;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 @Component
+@RequiredArgsConstructor
 public class EventProductCache {
 
 	private static final String KEY_PREFIX = "checkout:event-product:";
@@ -15,10 +17,6 @@ public class EventProductCache {
 	private static final int JITTER_BOUND_SECONDS = 60;
 
 	private final RedisClient redisClient;
-
-	public EventProductCache(final RedisClient redisClient) {
-		this.redisClient = redisClient;
-	}
 
 	public Optional<EventProduct> getFromRedis(final Long eventProductId) {
 		return redisClient.getJson(key(eventProductId), EventProduct.class);

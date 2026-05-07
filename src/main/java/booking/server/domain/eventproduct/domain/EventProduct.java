@@ -5,7 +5,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 public record EventProduct(
-		Long eventProductId,
+		long eventProductId,
 		String name,
 		BigDecimal price,
 		int totalStock,
@@ -14,7 +14,7 @@ public record EventProduct(
 		LocalDateTime openAt
 ) {
 
-	public static EventProduct from(final Long eventProductId, final EventProductEntity eventProduct) {
+	public static EventProduct fromEntity(final Long eventProductId, final EventProductEntity eventProduct) {
 		return new EventProduct(
 				eventProductId,
 				eventProduct.getName(),

@@ -1,4 +1,4 @@
-package booking.server.domain.user.entity;
+package booking.server.domain.user.domain.entity;
 
 import booking.server.domain.common.BaseTimeEntity;
 import jakarta.persistence.Column;
@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name = "users")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class UserEntity extends BaseTimeEntity {
+public class User extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,12 +27,12 @@ public class UserEntity extends BaseTimeEntity {
     @Column(name = "available_point", nullable = false)
     private int availablePoint;
 
-    private UserEntity(final String name, final int availablePoint) {
+    private User(final String name, final int availablePoint) {
         this.name = name;
         this.availablePoint = availablePoint;
     }
 
-    public static UserEntity create(final String name, final int availablePoint) {
-        return new UserEntity(name, availablePoint);
+    public static User create(final String name, final int availablePoint) {
+        return new User(name, availablePoint);
     }
 }
