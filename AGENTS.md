@@ -37,4 +37,4 @@ Role-specific agent prompts are kept in `.ai/agents/`, and reusable skills belon
 
 ## Local AI Commands
 
-When the user types `/code-review`, read `.ai/commands/code-review.md` and follow it. When the user types `/architecture`, read `.ai/commands/architecture.md` and follow it. When the user types `/write-tests`, read `.ai/commands/write-tests.md` and follow it.
+When the user types `/code-review`, read `.ai/commands/code-review.md` and follow it. When the user types `/plan`, read `.ai/commands/plan.md` and follow it. When the user types `/write-tests`, read `.ai/commands/write-tests.md` and follow it.

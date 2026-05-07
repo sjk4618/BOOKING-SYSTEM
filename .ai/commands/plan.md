@@ -1,15 +1,16 @@
-# /architecture
+# /plan
 
-Use `.ai/agents/architecture.md`.
+Use `.ai/agents/plan.md`.
 
 ## Purpose
 
-Design or review backend architecture for a new feature, refactor, or system change.
+Create an implementation plan before building a new feature, refactor, or backend architecture change.
 
 ## Required Context
 
 - Inspect current package structure and related domain code.
 - Identify requirements, data flow, transaction boundaries, and integration points.
+- Review similar implementations and existing project conventions.
 - Load related skills:
   - `.ai/skills/springboot-standard.md`
   - `.ai/skills/jpa-standard.md`
@@ -19,7 +20,8 @@ Design or review backend architecture for a new feature, refactor, or system cha
 ## Command Prompt
 
 ```text
-Use .ai/agents/architecture.md to design the backend architecture for this request.
+Use .ai/agents/plan.md to create an implementation plan for this request.
 Apply springboot-standard, jpa-standard, java-standard, and test-guide.
-Include current structure summary, proposed components, data model/API contract, trade-offs, risks, and implementation phases.
+Include requirements, current structure summary, proposed components, data model/API contract, trade-offs, risks, implementation phases, and testing strategy.
 ```
+
