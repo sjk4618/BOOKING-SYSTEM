@@ -1,4 +1,4 @@
-package booking.server.domain.stock.entity;
+package booking.server.domain.stock.domain.entity;
 
 import booking.server.domain.common.BaseTimeEntity;
 import jakarta.persistence.Column;
