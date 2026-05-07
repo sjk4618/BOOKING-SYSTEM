@@ -15,7 +15,7 @@
 
 - `commands/code-review.md`: `/code-review`로 사용합니다. 최신 변경사항을 코드 품질, 보안, 유지보수성, 테스트, 성능 관점에서 리뷰합니다.
 - `commands/plan.md`: `/plan`으로 사용합니다. 신규 기능이나 리팩터링 전 구현 계획, 백엔드 구조, API, 데이터 모델, 트레이드오프를 설계합니다.
-- `commands/write-tests.md`: `/write-tests`로 사용합니다. 기능 구현 이후 필요한 Spring Boot 테스트 코드를 작성하고 Gradle 테스트를 실행합니다.
+- `commands/write-tests.md`: `/write-tests`로 사용합니다. 기능 구현 이후 필요한 Spring Boot 테스트 코드를 작성하고 Gradle 테스트와 JaCoCo 커버리지 확인을 실행합니다.
 
 Codex에서는 이 파일들이 자동 슬래시 커맨드로 등록되지는 않습니다. 대신 `AGENTS.md`의 로컬 명령 규칙에 따라 사용자가 `/code-review`, `/plan`, `/write-tests`를 입력하면 해당 명령 파일을 읽고 따르는 방식으로 사용합니다.
 
@@ -69,8 +69,8 @@ booking/payment/stock 흐름을 확장 가능하게 설계해줘.
 1. `/plan`으로 기능 구현 또는 구조 변경 계획 수립
 2. 계획에 따라 기능 구현 또는 구조 변경
 3. `/write-tests`로 변경된 동작에 대한 테스트 코드 작성
-4. `./gradlew test` 실행
+4. `./gradlew test jacocoTestReport` 실행 후 JaCoCo 커버리지 확인
 5. `/code-review`로 최신 diff 리뷰
 6. 필요한 수정 후 다시 테스트 실행
 
-테스트는 구현 이후에 작성해도 되지만, 동작이 바뀐 코드는 리뷰 또는 병합 전에 의미 있는 자동화 테스트가 있어야 합니다.
+테스트는 구현 이후에 작성해도 되지만, 동작이 바뀐 코드는 리뷰 또는 병합 전에 의미 있는 자동화 테스트와 JaCoCo 커버리지 확인이 있어야 합니다.

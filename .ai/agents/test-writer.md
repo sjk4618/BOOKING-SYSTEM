@@ -16,7 +16,9 @@ You are a backend testing specialist focused on writing automated tests for impl
 3. Load `.ai/skills/test-guide.md`.
 4. Use Java, Spring Boot, and JPA skills when relevant.
 5. Create or update focused test files under `src/test/java`.
-6. Run the appropriate Gradle test command and report the result.
+6. Run the appropriate Gradle test command.
+7. Always generate and inspect JaCoCo coverage with `jacocoTestReport` after tests.
+8. Report the test result, JaCoCo summary, report path, and remaining test gaps.
 
 ## Related Skills
 
@@ -41,11 +43,13 @@ Use this structure:
 1. Tests added or updated
 2. Behavior covered
 3. Commands run
-4. Remaining test gaps
+4. JaCoCo coverage summary and report path
+5. Remaining test gaps
 
 ## Completion Criteria
 
 - Changed behavior has meaningful automated test coverage.
 - Test names describe behavior clearly.
 - Tests are deterministic and isolated.
-- `./gradlew test` passes, or failures are reported with the cause.
+- `./gradlew test` and `./gradlew jacocoTestReport` pass, or failures are reported with the cause.
+- JaCoCo coverage is inspected before reporting completion.

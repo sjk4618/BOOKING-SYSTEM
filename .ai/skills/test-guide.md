@@ -135,9 +135,21 @@ Use integration tests for critical flows where controller, service, transaction,
 
 ```bash
 ./gradlew test
+./gradlew test jacocoTestReport
+./gradlew jacocoTestCoverageVerification
 ./gradlew build
 ```
 
-Use `./gradlew test` for normal verification. Use `./gradlew build` before merge when compile, tests, and packaging all need validation.
+Use `./gradlew test` for normal verification, and always generate/check JaCoCo coverage with `./gradlew test jacocoTestReport` when tests are part of the task. Use `./gradlew jacocoTestCoverageVerification` when coverage rules are configured. Use `./gradlew build` before merge when compile, tests, and packaging all need validation.
+
+## Coverage Reporting
+
+- Always inspect JaCoCo after running tests.
+- Report the HTML and XML report paths when available.
+- Summarize the main coverage counters, especially line and branch coverage.
+- If coverage is low, identify the untested behavior rather than chasing trivial getter or boilerplate coverage.
+- Default report paths:
+  - HTML: `build/reports/jacoco/test/html/index.html`
+  - XML: `build/reports/jacoco/test/jacocoTestReport.xml`
 
 Remember: implementation may come first, but behavior-changing code should not be considered complete until meaningful tests pass.
