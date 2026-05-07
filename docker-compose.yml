@@ -9,7 +9,7 @@ services:
       MYSQL_ROOT_PASSWORD: root
       TZ: Asia/Seoul
     ports:
-      - "13306:3306"
+      - "13306:3306" # 로컬에서 이미 돌리고 있는 포트 존재 가능성 때문에 13306으로 사용
     command:
       - --character-set-server=utf8mb4
       - --collation-server=utf8mb4_unicode_ci
@@ -26,7 +26,7 @@ services:
     image: redis:7.4-alpine
     container_name: booking-redis
     ports:
-      - "16379:6379"
+      - "16379:6379" #로컬에서 이미 돌리고 있는 포트 존재 가능성 때문에 16379로 사용
     volumes:
       - redis-data:/data
     command: ["redis-server", "--appendonly", "yes"]
