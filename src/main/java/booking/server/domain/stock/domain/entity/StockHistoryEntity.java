@@ -19,18 +19,19 @@ import lombok.NoArgsConstructor;
 @Getter
 @Entity
 @Table(
-        name = "stock_histories"
-//        indexes = {
-//                @Index(name = "idx_stock_histories_event_product_id", columnList = "event_product_id"),
-//                @Index(name = "idx_stock_histories_booking_id", columnList = "booking_id"),
-//                @Index(name = "idx_stock_histories_user_id", columnList = "user_id")
-//        },
-//        uniqueConstraints = {
-//                @UniqueConstraint(
-//                        name = "uk_stock_histories_booking_type",
-//                        columnNames = {"event_product_id", "booking_id", "type"}
-//                )
-//        }
+        name = "stock_histories",
+        indexes = {
+                @Index(name = "idx_stock_histories_event_product_id", columnList = "event_product_id"),
+                @Index(name = "idx_stock_histories_booking_id", columnList = "booking_id"),
+                @Index(name = "idx_stock_histories_user_id", columnList = "user_id"),
+                @Index(name = "idx_stock_histories_event_product_user", columnList = "event_product_id,user_id")
+        },
+        uniqueConstraints = {
+                @UniqueConstraint(
+                        name = "uk_stock_histories_booking_type",
+                        columnNames = {"event_product_id", "booking_id", "type"}
+                )
+        }
 )
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class StockHistoryEntity extends BaseTimeEntity {
